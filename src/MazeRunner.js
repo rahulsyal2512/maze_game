@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { path } from "./runnerPath";
 
 const Container = styled.div`
   width: 100%;
@@ -7,8 +8,8 @@ const Container = styled.div`
   img.heading {
     display: flex;
     margin: 0 auto;
-    width: 75%;
-    margin-bottom: 40px;
+    width: 40%;
+    margin-bottom: 20px;
   }
   div.flex {
     max-width: 450px;
@@ -18,19 +19,27 @@ const Container = styled.div`
     align-items: flex-end;
   }
   img.animal {
-    height: 110px;
+    height: 80px;
   }
   img.man {
-    height: 150px;
+    height: 100px;
   }
   div.maze {
-    position: relative;
-    width: 450px;
-    height: 450px;
+    width: 420px;
+    height: 420px;
     display: flex;
     margin: 0 auto;
     background: url("https://res.cloudinary.com/rajatvijay/image/upload/v1569589354/maze_game/8.png");
     background-size: cover;
+    justify-content: center;
+    align-items: center;
+  }
+  div.boundary {
+    position: relative;
+    width: 342px;
+    height: 320px;
+    margin-top: -5px;
+    margin-left: 8px;
   }
 `;
 
@@ -47,33 +56,57 @@ const Point = styled.div`
 
 export default class MazeRunner extends Component {
   state = {
-    top: 56,
-    left: 83
+    top: 0,
+    left: 25
   };
   componentDidMount() {
     const maze = document.getElementById("maze-runner");
-    console.log(maze.offsetLeft, maze.offsetTop);
-
     window.addEventListener("keydown", event => {
+      var nextLeftPosition;
+      var nextTopPosition;
+      var checkPosition = [];
       if (event.keyCode === 37) {
-        this.setState({
-          left: Math.abs(30 - this.state.left)
-        });
+        nextLeftPosition = Math.abs(4 - this.state.left);
+        nextTopPosition = this.state.top;
       }
       if (event.keyCode === 39) {
-        this.setState({
-          left: Math.abs(30 + this.state.left)
-        });
+        nextLeftPosition = Math.abs(4 + this.state.left);
+        nextTopPosition = this.state.top;
       }
       if (event.keyCode === 38) {
-        this.setState({
-          top: Math.abs(45 - this.state.top)
-        });
+        nextTopPosition = Math.abs(4 - this.state.top);
+        nextLeftPosition = this.state.left;
       }
       if (event.keyCode === 40) {
-        this.setState({
-          top: Math.abs(45 + this.state.top)
-        });
+        nextTopPosition = Math.abs(4 + this.state.top);
+        nextLeftPosition = this.state.left;
+      }
+      checkPosition = path.filter(path => {
+        if (path.left === nextLeftPosition && path.top === nextTopPosition) {
+          return path;
+        }
+      });
+      if (checkPosition.length !== 0) {
+        if (event.keyCode === 37) {
+          this.setState({
+            left: Math.abs(4 - this.state.left)
+          });
+        }
+        if (event.keyCode === 39) {
+          this.setState({
+            left: Math.abs(4 + this.state.left)
+          });
+        }
+        if (event.keyCode === 38) {
+          this.setState({
+            top: Math.abs(4 - this.state.top)
+          });
+        }
+        if (event.keyCode === 40) {
+          this.setState({
+            top: Math.abs(4 + this.state.top)
+          });
+        }
       }
     });
   }
@@ -107,13 +140,15 @@ export default class MazeRunner extends Component {
         </div>
 
         <div className="maze">
-          <Point
-            id="maze-runner"
-            className="point"
-            top={top}
-            left={left}
-            onKeyDown={e => this.moveAnimal(e)}
-          ></Point>
+          <div className="boundary">
+            <Point
+              id="maze-runner"
+              className="point"
+              top={top}
+              left={left}
+              onKeyDown={e => this.moveAnimal(e)}
+            ></Point>
+          </div>
         </div>
 
         <div className="flex">
