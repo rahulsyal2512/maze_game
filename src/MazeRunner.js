@@ -54,12 +54,14 @@ export default class MazeRunner extends Component {
       );
     }
     arr.push(`100% {left: 69px; top : 20px;}`);
-    console.log(arr);
-    // this.setState({
-    //   left: 69,
-    //   top: 20,
-    //   moveBack: false
-    // });
+    setTimeout(() => {
+      this.setState({
+        left: 69,
+        top: 20,
+        moveBack: false
+      });
+    }, 4200);
+
     return arr;
   };
 
@@ -71,7 +73,7 @@ export default class MazeRunner extends Component {
   };
 
   animations = value => css`
-    ${this.moveBack(value)} 3s forwards;
+    ${this.moveBack(value)} 4s forwards;
   `;
 
   componentDidMount() {
@@ -131,28 +133,28 @@ export default class MazeRunner extends Component {
           return path;
         }
       });
-      // if (checkPosition.length !== 0) {
-      if (event.keyCode === 37) {
-        this.setState({
-          left: Math.abs(4 - this.state.left)
-        });
+      if (checkPosition.length !== 0) {
+        if (event.keyCode === 37) {
+          this.setState({
+            left: Math.abs(4 - this.state.left)
+          });
+        }
+        if (event.keyCode === 39) {
+          this.setState({
+            left: Math.abs(4 + this.state.left)
+          });
+        }
+        if (event.keyCode === 38) {
+          this.setState({
+            top: Math.abs(4 - this.state.top)
+          });
+        }
+        if (event.keyCode === 40) {
+          this.setState({
+            top: Math.abs(4 + this.state.top)
+          });
+        }
       }
-      if (event.keyCode === 39) {
-        this.setState({
-          left: Math.abs(4 + this.state.left)
-        });
-      }
-      if (event.keyCode === 38) {
-        this.setState({
-          top: Math.abs(4 - this.state.top)
-        });
-      }
-      if (event.keyCode === 40) {
-        this.setState({
-          top: Math.abs(4 + this.state.top)
-        });
-      }
-      // }
     });
   }
 
