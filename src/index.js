@@ -1,5 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import MazeRunner from "./MazeRunner";
+import App from "./App";
 
-ReactDOM.render(<MazeRunner />, document.getElementById("root"));
+ReactDOM.render(<App />, document.getElementById("root"));

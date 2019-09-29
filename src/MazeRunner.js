@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import styled from "styled-components";
-import { path } from "./runnerPath";
+import styled, { keyframes, css } from "styled-components";
+import { path, returnPath1, returnPath2 } from "./runnerPath";
 
 const Container = styled.div`
   width: 100%;
@@ -9,7 +9,7 @@ const Container = styled.div`
     display: flex;
     margin: 0 auto;
     width: 40%;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
   div.flex {
     max-width: 450px;
@@ -25,6 +25,7 @@ const Container = styled.div`
     height: 100px;
   }
   div.maze {
+    position: relative;
     width: 420px;
     height: 420px;
     display: flex;
@@ -34,37 +35,81 @@ const Container = styled.div`
     justify-content: center;
     align-items: center;
   }
-  div.boundary {
-    position: relative;
-    width: 342px;
-    height: 320px;
-    margin-top: -5px;
-    margin-left: 8px;
-  }
-`;
-
-const Point = styled.div`
-  position: absolute;
-  width: 52px;
-  height: 36px;
-  background: url("https://res.cloudinary.com/rajatvijay/image/upload/v1569588376/maze_game/4.png");
-  top: ${props => props.top}px;
-  left: ${props => props.left}px;
-  background-size: cover;
-  background-repeat: no-repeat;
 `;
 
 export default class MazeRunner extends Component {
   state = {
-    top: 0,
-    left: 25
+    top: 20,
+    left: 69,
+    path: {},
+    success: false,
+    moveBack: false
   };
+  frames = (length, path) => {
+    let arr = [];
+    for (let i = 0; i < path.loop; i++) {
+      let percent = `${length * i}%`;
+      arr.push(
+        `${percent} { left: ${path.value[i].left}px; top: ${path.value[i].top}px; }`
+      );
+    }
+    arr.push(`100% {left: 69px; top : 20px;}`);
+    console.log(arr);
+    // this.setState({
+    //   left: 69,
+    //   top: 20,
+    //   moveBack: false
+    // });
+    return arr;
+  };
+
+  moveBack = path => {
+    const length = path.value.length / path.division;
+    return keyframes`
+      ${this.frames(length, path).map(frame => frame)}
+  `;
+  };
+
+  animations = value => css`
+    ${this.moveBack(value)} 3s forwards;
+  `;
+
   componentDidMount() {
     const maze = document.getElementById("maze-runner");
     window.addEventListener("keydown", event => {
+      //left down left 45 top 364
       var nextLeftPosition;
       var nextTopPosition;
       var checkPosition = [];
+
+      if (this.state.left === 329 && this.state.top === 4) {
+        this.setState({
+          moveBack: true,
+          path: {
+            name: "returnPath2",
+            value: returnPath2,
+            loop: 169,
+            division: 340
+          }
+        });
+      }
+
+      if (this.state.left === 45 && this.state.top === 364) {
+        this.setState({
+          moveBack: true,
+          path: {
+            name: "returnPath1",
+            value: returnPath1,
+            loop: 419,
+            division: 1800
+          }
+        });
+      }
+
+      if (this.state.left === 301 && this.state.top === 364) {
+        this.props.history.push("/completed");
+      }
+
       if (event.keyCode === 37) {
         nextLeftPosition = Math.abs(4 - this.state.left);
         nextTopPosition = this.state.top;
@@ -86,42 +131,52 @@ export default class MazeRunner extends Component {
           return path;
         }
       });
-      if (checkPosition.length !== 0) {
-        if (event.keyCode === 37) {
-          this.setState({
-            left: Math.abs(4 - this.state.left)
-          });
-        }
-        if (event.keyCode === 39) {
-          this.setState({
-            left: Math.abs(4 + this.state.left)
-          });
-        }
-        if (event.keyCode === 38) {
-          this.setState({
-            top: Math.abs(4 - this.state.top)
-          });
-        }
-        if (event.keyCode === 40) {
-          this.setState({
-            top: Math.abs(4 + this.state.top)
-          });
-        }
+      // if (checkPosition.length !== 0) {
+      if (event.keyCode === 37) {
+        this.setState({
+          left: Math.abs(4 - this.state.left)
+        });
       }
+      if (event.keyCode === 39) {
+        this.setState({
+          left: Math.abs(4 + this.state.left)
+        });
+      }
+      if (event.keyCode === 38) {
+        this.setState({
+          top: Math.abs(4 - this.state.top)
+        });
+      }
+      if (event.keyCode === 40) {
+        this.setState({
+          top: Math.abs(4 + this.state.top)
+        });
+      }
+      // }
     });
   }
-  moveAnimal = e => {
-    setInterval(this.updatePosition(e), 1);
-  };
-  updatePosition = e => {
-    if (e.keycode === 37) {
-      console.log("left");
-    }
-  };
 
   render() {
     const { top, left } = this.state;
-
+    const Point = styled.div`
+      position: absolute;
+      width: 52px;
+      height: 36px;
+      background: url("https://res.cloudinary.com/rajatvijay/image/upload/v1569588376/maze_game/4.png");
+      top: ${props => props.top}px;
+      left: ${props => props.left}px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      -webkit-transition: all 0.2s linear;
+      -moz-transition: all 0.2s linear;
+      -o-transition: all 0.2s linear;
+      -ms-transition: all 0.2s linear;
+      opacity: 1;
+      -webkit-animation: ${props =>
+        props.animation ? this.animations(props.path) : "none"};
+      animation: ${props =>
+        props.animation ? this.animations(props.path) : "none"};
+    `;
     return (
       <Container>
         <img
@@ -140,15 +195,14 @@ export default class MazeRunner extends Component {
         </div>
 
         <div className="maze">
-          <div className="boundary">
-            <Point
-              id="maze-runner"
-              className="point"
-              top={top}
-              left={left}
-              onKeyDown={e => this.moveAnimal(e)}
-            ></Point>
-          </div>
+          <Point
+            id="maze-runner"
+            className="point"
+            top={top}
+            left={left}
+            animation={this.state.moveBack}
+            path={this.state.path}
+          ></Point>
         </div>
 
         <div className="flex">
