@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import styled, { keyframes, css } from "styled-components";
 import { path, returnPath1, returnPath2 } from "./runnerPath";
+import bhaagRangaBhaag from "./assests/bhaag.mp3";
+import Sound from "react-sound";
 
 const Container = styled.div`
   width: 100%;
@@ -43,14 +45,18 @@ export default class MazeRunner extends Component {
     left: 69,
     path: {},
     success: false,
-    moveBack: false
+    moveBack: false,
+    sound: "",
+    soundStatus: ""
   };
   frames = (length, path) => {
     let arr = [];
     for (let i = 0; i < path.loop; i++) {
       let percent = `${length * i}%`;
       arr.push(
-        `${percent} { left: ${path.value[i].left}px; top: ${path.value[i].top}px; }`
+        `${percent} { left: ${path.value[i].left}px; top: ${
+          path.value[i].top
+        }px; }`
       );
     }
     arr.push(`100% {left: 69px; top : 20px;}`);
@@ -78,6 +84,10 @@ export default class MazeRunner extends Component {
 
   componentDidMount() {
     const maze = document.getElementById("maze-runner");
+    this.setState({
+      sound: bhaagRangaBhaag,
+      soundStatus: "PLAYING"
+    });
     window.addEventListener("keydown", event => {
       //left down left 45 top 364
       var nextLeftPosition;
@@ -157,9 +167,22 @@ export default class MazeRunner extends Component {
       }
     });
   }
-
+  onEnd = () => {
+    this.setState({
+      sound: "",
+      soundStatus: ""
+    });
+  };
+  playAudio = () => {
+    if (this.state.soundStatus !== "PLAYING") {
+      this.setState({
+        sound: bhaagRangaBhaag,
+        soundStatus: "PLAYING"
+      });
+    }
+  };
   render() {
-    const { top, left } = this.state;
+    const { top, left, sound, soundStatus } = this.state;
     const Point = styled.div`
       position: absolute;
       width: 52px;
@@ -181,19 +204,26 @@ export default class MazeRunner extends Component {
     `;
     return (
       <Container>
+        <Sound
+          url={sound}
+          playStatus={Sound.status[soundStatus]}
+          onFinishedPlaying={() => this.onEnd()}
+        />
         <img
+          style={{ pointer: "cursor" }}
+          onMouseOver={() => this.playAudio()}
           src="https://res.cloudinary.com/rajatvijay/image/upload/v1569587173/maze_game/1_mobile.png"
           className="heading"
-        ></img>
+        />
         <div className="flex">
           <img
             src="https://res.cloudinary.com/rajatvijay/image/upload/v1569588376/maze_game/4.png"
             className="animal"
-          ></img>
+          />
           <img
             src="https://res.cloudinary.com/rajatvijay/image/upload/v1569588882/maze_game/5.png"
             className="man"
-          ></img>
+          />
         </div>
 
         <div className="maze">
@@ -204,18 +234,18 @@ export default class MazeRunner extends Component {
             left={left}
             animation={this.state.moveBack}
             path={this.state.path}
-          ></Point>
+          />
         </div>
 
         <div className="flex">
           <img
             src="https://res.cloudinary.com/rajatvijay/image/upload/v1569589136/maze_game/7.png"
             className="man"
-          ></img>
+          />
           <img
             src="https://res.cloudinary.com/rajatvijay/image/upload/v1569589193/maze_game/6.png"
             className="animal"
-          ></img>
+          />
         </div>
       </Container>
     );
