@@ -84,10 +84,6 @@ export default class MazeRunner extends Component {
 
   componentDidMount() {
     const maze = document.getElementById("maze-runner");
-    this.setState({
-      sound: bhaagRangaBhaag,
-      soundStatus: "PLAYING"
-    });
     window.addEventListener("keydown", event => {
       //left down left 45 top 364
       var nextLeftPosition;
@@ -176,8 +172,8 @@ export default class MazeRunner extends Component {
   playAudio = () => {
     if (this.state.soundStatus !== "PLAYING") {
       this.setState({
-        sound: bhaagRangaBhaag,
-        soundStatus: "PLAYING"
+        sound: "",
+        soundStatus: ""
       });
     }
   };
@@ -210,7 +206,7 @@ export default class MazeRunner extends Component {
           onFinishedPlaying={() => this.onEnd()}
         />
         <img
-          style={{ pointer: "cursor" }}
+          style={{ cursor: "pointer" }}
           onMouseOver={() => this.playAudio()}
           src="https://res.cloudinary.com/rajatvijay/image/upload/v1569587173/maze_game/1_mobile.png"
           className="heading"
